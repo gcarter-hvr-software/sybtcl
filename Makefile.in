@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.4 2000/08/18 01:34:19 mtariq Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.5 2000/08/18 03:33:28 mtariq Exp $
 
 #========================================================================
 # Edit the following few lines when writing a new extension
@@ -176,7 +176,7 @@ EXTRA_CFLAGS = $(TCL_DEFS) $(PROTO_FLAGS) $(SECURITY_FLAGS) $(MEM_DEBUG_FLAGS) $
 DEFS = @DEFS@ $(EXTRA_CFLAGS)
 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-CONFIGDIR = $(top_srcdir)
+CONFIGDIR = @CONFIGDIR@
 mkinstalldirs = $(SHELL) $(CONFIGDIR)/mkinstalldirs
 CONFIG_CLEAN_FILES = mkIndex.tcl
 
