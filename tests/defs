@@ -122,6 +122,7 @@ flush stdout
 proc truncate_table {} {
     global syb_hand
     sybsql $syb_hand {truncate table sybtcl___tests}
+    sybsql $syb_hand {truncate table sybtcl___testnext}
 }
 
 proc drop_table {} {
@@ -129,6 +130,7 @@ proc drop_table {} {
     catch {sybsql $syb_hand "drop procedure sybtcl___test1"}
     catch {sybsql $syb_hand "drop procedure sybtcl___test2"}
     catch {sybsql $syb_hand "drop table sybtcl___tests"}
+    catch {sybsql $syb_hand "drop table sybtcl___testnext"}
 }
 
 
@@ -147,7 +149,6 @@ if {[catch {
 
 }
 
-sybsql $syb_hand "sp_help sybtcl___tests"
 if {$table_exists} {
     puts "sybtcl___tests exists,"
     puts -nonewline "  do you want to drop and re-create it (yes/no, default=no): "
@@ -202,22 +203,26 @@ proc create_table {} {
 	exit
     }
 
-   sybsql $syb_hand {
-       create procedure sybtcl___test1 (
-	 @x int, 
-	 @y int, 
-	 @res int output
-       )
-       as
-       begin
-	   select v_smallint, v_varchar_255 from sybtcl___tests
-	   select @res = @x * @y
-	   select @res
-	   print 'sybtcl___test1 got %1!', @res
-	   select @x = @x + @y
-	   return @x 
-       end
-     }
+    sybsql $syb_hand {
+        create table sybtcl___testnext (v_int int not null)
+    }
+
+    sybsql $syb_hand {
+        create procedure sybtcl___test1 (
+	    @x int, 
+	    @y int, 
+	    @res int output
+        )
+        as
+        begin
+	    select v_smallint, v_varchar_255 from sybtcl___tests
+	    select @res = @x * @y
+	    select @res
+	    print 'sybtcl___test1 got %1!', @res
+	    select @x = @x + @y
+	    return @x 
+        end
+    }
 }
 
 create_table
@@ -268,11 +273,31 @@ proc insert_data {} {
       )
     } 
 
-    puts -nonewline "creating 30 initial rows in sybtcl___tests" ; flush stdout
+    puts -nonewline "creating 30 initial rows in sybtcl___tests"
+    flush stdout
     for {set cnt 0} {$cnt < 30} {incr cnt} {
         sybsql $syb_hand [subst $ins_sql]
         puts -nonewline "." ; flush stdout
     }
+
+    # Insert 300 rows into the testnext table in batches of 20.
+    set nPerBatch 20
+    set desiredTot 300
+    set curTot 0
+    set sql {}
+    for {set i 0} {$i < $nPerBatch} {incr i} {
+        append sql "insert into sybtcl___testnext(v_int) values(2)\n"
+    }
+    puts -nonewline "\ncreating 300 initial rows in sybtcl___testnext"
+    flush stdout
+    while {$curTot < $desiredTot} {
+        sybsql $syb_hand $sql
+        sybnext $syb_hand { }
+        incr curTot $nPerBatch
+        puts -nonewline ".$curTot"
+        flush stdout
+    }
+
     puts "\ndone." ; flush stdout
 
 }

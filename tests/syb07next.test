@@ -82,4 +82,18 @@ test sybnext-1.10 {sybnext: fixedchar on} {
   set row
 } {{0 x       }}
 
+# Yes, this query really needs the order by along with the count(*) to
+# reproduce the original error in Sybtcl 3.0b2 caused by calling dbpoll
+# inside the C code for sybnext.  This originally resulted in an error and
+# a killed connection with sybmsg(dberr)==20020 and sybmsg(dberrstr)=
+# "Bad token from SQL Server: Datastream processing out of sync.".  This
+# was only reproducable on Solaris w/OpenClient 11.1.1 hitting srv 11.0.3.
+test sybnext-1.11 {sybnext: err in 3.0b2 caused by dbpoll() inside sybnext} {
+  sybsql $syb_hand {select count(*) from sybtcl___testnext order by v_int}
+  set res 0
+  set cnt 0
+  set cmd [list sybnext $syb_hand {set res $c1; incr cnt} {} c1 1]
+  set caught [catch $cmd]
+  set testRes "caughtErr=$caught res=$res cnt=$cnt"
+} {caughtErr=0 res=300 cnt=300}
 
