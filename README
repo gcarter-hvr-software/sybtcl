@@ -57,13 +57,13 @@ Sybtcl does not:
 
 WHERE TO GET SYBTCL
 
-http://www.nyx.net/~tpoindex/tcl.html
+http://sourceforge.net/projects/sybtcl/
 
 with pointers to:
 	
-ftp://ftp.neosoft.com/pub/tcl/sorted/databases/sybtcl-3.0b3/
+ftp://ftp.neosoft.com/pub/tcl/sorted/databases/sybtcl-3.0/
 or
-http://www.neosoft.com/tcl/ftparchive/sorted/databases/sybtcl-3.0b3/
+http://www.neosoft.com/tcl/ftparchive/sorted/databases/sybtcl-3.0/
 
 
 
@@ -96,15 +96,15 @@ executables, I recommend building with Extended Tcl.
 
 The specific software versions I used:
 
-        Tcl - 8.0.5           ftp.scriptics.com:/pub/tcl8_0/tcl8.0.5.tar.gz
-        Tk  - 8.0.5           ftp.scriptics.com:/pub/tcl8_0/tk8.0.5.tar.gz
-                              also avaible at
-			      http://www.scriptics.com
-			      http://www.tclconsortium.org
-			      http://www.neosoft.com/tcl
+        Tcl - 8.3.2         http://download.sourceforge.net/tcl/tcl8.3.2.tar.gz
+        Tk  - 8.3.2         http://download.sourceforge.net/tcl/tk8.3.2.tar.gz
+                            also avaible at
+			    http://www.scriptics.com
+			    http://www.tcltk.com/
+			    http://www.neosoft.com/tcl
 
-        Extended Tcl - 8.0.4  ftp.neosoft.com
-                                /pub/tcl/TclX/tclX8.0.4.tar.gz
+        Extended Tcl - 8.2.0  ftp.neosoft.com
+                                /pub/tcl/TclX/tclX8.2.0.tar.gz
 
 
 	Sybase SQL Server - 4.x, System 10, or System 11  
@@ -207,7 +207,7 @@ Comments, suggestions, et.al., should be mailed to me
 or posted to comp.lang.tcl if general enough nature.  
 Hell, you can even mail to me if you like Sybtcl!
 
-Mail bug reports to:        tpoindex@nyx.net
+Mail bug reports to:        dhagberg@millibits.com and/or tpoindex@nyx.net
 
 Please ALWAYS INCLUDE:  
 	-version of Sybtcl
