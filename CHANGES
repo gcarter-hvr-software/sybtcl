@@ -350,3 +350,8 @@ Version 3.0, April, 1999
 
     Moved to SourceForge.  Added config/* to cvs tree (used to be included
     as a cvs link).  -- hobbs
+
+--- December 2000
+
+    Package up 3.0 for release, changing several READMEs, installers, etc.
+

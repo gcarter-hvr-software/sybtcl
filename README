@@ -24,9 +24,10 @@ Sybtcl -  Tcl interface to Sybase database server
  * Version 2.4  December, 1996
  * Version 2.5  November, 1997
  *-----------------------------------------------------------------------
- * Version 3.0  April, 1999
- * Tom Poindexter, Denver Colorado
- * tpoindex@nyx.net
+ * Version 3.0  December, 2000
+ * D. J. Hagberg, maintainer            Tom Poindexter, author
+ * Broomfield, Colorado                 Denver, Colorado
+ * dhagberg@millibits.com               tpoindex@nyx.net
 
 
 WHAT IS SYBTCL?
@@ -57,14 +58,18 @@ Sybtcl does not:
 
 WHERE TO GET SYBTCL
 
-http://sourceforge.net/projects/sybtcl/
+http://sybtcl.sourceforge.net/
 
-with pointers to:
+And additionally from the Neosoft site:
 	
 ftp://ftp.neosoft.com/pub/tcl/sorted/databases/sybtcl-3.0/
 or
 http://www.neosoft.com/tcl/ftparchive/sorted/databases/sybtcl-3.0/
 
+
+HOW TO BUILD SYBTCL
+
+See the INSTALL file for instructions on how to build sybtcl from source.
 
 
 ACKNOWLEDGEMENTS
@@ -88,7 +93,7 @@ prepared to get it via Ftp [sites listed below].
 Of course, you must also have access to a Sybase Databaser Server.  
 Additionally, you must have the Sybase Open Client (aka "DB-Library") package 
 that provides header files and object libraries;  Sybtcl must be linked 
-with libsybdb.a.
+with libsybdb -- typically dynamically as a .dll, .so.
 
 Sybtcl supports building a dynamic load library on
 systems that support dynamic loading.  If you build static libraries and
@@ -115,8 +120,8 @@ The specific software versions I used:
 
 
 I've built Sybtcl in Sequent PTX 1.3 (System V 3.2), SunOS 4.1.x, Solaris 2.5,
-Dec Unix, HPUX 9.x/10.x, Linux/ELF (RedHat 5.2), and Windows NT 4.0/95/VC++ 4.0,
-MacOS 8.1/MPW.
+Dec Unix, HPUX 9.x/10.x, Linux/ELF (RedHat 5.2), and 
+Windows NT 4.0/95/VC++ 4.0, MacOS 8.1/MPW.
 
 Other users have reported successful compiles on: 
 SGI Irix
@@ -128,7 +133,7 @@ LINUX
 
 You can now get Sybase Adaptive Server Enterprise 11.0.3 for *free*,
 including the necessary DB-Lib.  Get yours at:
-	http://www.sybase/com/adaptiveserver/linux
+	http://www.sybase.com/linux/ase/
 	http://www.redhat.com
 	http://www.caldera.com
 	http://www.suse.com
@@ -138,7 +143,7 @@ WINDOWS NT/95/98/00 AND MACINTOSH
 
 Windows:
 A DLL for Windows NT/95 is supplied in the ./win directory. 
-Run 'tclsh80 install.tcl' to install.
+Run 'tclsh83 install.tcl' to install.
 
 See the win/README.win file for more information.
 
@@ -152,16 +157,15 @@ I've built the DLL with Open Client 11.5, but it should build with anything
 10.0.3 and higher.  The DLL was compiled with Microsoft VC 4.0.
 
 
-Macintosh:  
-A Macintosh PowerPC shared library is in the ./mac directory.
-Run 'install.tcl' by starting the 'Tcl 8.0 Shell', and typing
-'source install.tcl'.  You'll need the de facto Stuff-it program, or
-similar to unpack the .shlb.hqx file.  The FTP client 'Fetch' can also decode 
-BinHex files during an FTP session also.
+Macintosh:
+[Currently, I have no way to compile a binary for Sybtcl on the Mac
+as I do not have a Mac port of OpenClient available, nor a decent MPW 
+setup.  If anyone can offer this service, please let me know and I will
+be happy to include it in this distro  -=- D. J. <dhagberg@millibits.com>]
 
 Macintosh users must have a Sybase client installation on their machines.
 I've built the shared lib with Open Client 10.0.4, using the 'CFM (FAT)'
-libraries.  The shared lib was compiled with Apple's MPW MrC compiler.
+libraries.  The shared lib can be compiled with Apple's MPW MrC compiler.
 You can get Apple MPW for *free* at:
 http://www.apple.com/developer
 http://developer.apple.com/sdk/index.html
@@ -192,7 +196,7 @@ OTHER DOCUMENTATION
 Sybtcl is explained in greater detail in "Tcl/Tk Tools", edited by Mark 
 Harrison, and published by O'Reilly and Associates.  "Tcl/Tk Tools" is 
 a new book that covers many of the popular Tcl extensions, written by
-the authors of each extension (I wrote the chapters on Sybtcl and Oratcl.)
+the authors of each extension (Tom wrote the chapters on Sybtcl and Oratcl.)
 1st Edition published September 1997, ISBN: 1-56592-218-2
 See your local bookstore, or try: 
 	http://www.softpro.com
@@ -255,6 +259,7 @@ INSTALLATION
 
 Quickie install instructions:
 
+        cd unix
 	./configure --prefix=/same/prefix/path/as/with/tcl/configure  \
 		    --exec-prefix=/same/exec-prefix/path/as/with/tcl/configure 
 	make
@@ -277,6 +282,17 @@ permission to create tables and stored procedures.  You can run the test suite
 after building Sybtcl by running:
 
 	make tests
+
+
+ADDITIONAL APPS
+
+De Clark has built some wonder applications using Sybtcl, including the
+feature-rich full version of Wisql.  Visit her site at:
+
+    http://www.ucolick.org/~de/Tcl/
+
+and visit the UCO Lick Tcl/Tk source code link to view and download all
+these applications.
 
 
 OTHER

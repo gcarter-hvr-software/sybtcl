@@ -2,7 +2,9 @@ Sybtcl
 
 INSTALLATION
 
-For installation on win and mac platforms, see the ./win and ./mac directories.
+For installation on win and mac platforms, see the relevant README
+files in the ./win and ./mac directories.  The rest of this document
+is focused on Un*x/Linux and similar environments.
 
 Sybtcl by default builds as a shared library, or you can build it as a 
 statically linked executable, with or without the fine Extended Tcl (TclX)
@@ -20,13 +22,18 @@ interpreters.  Install tcl and wish into public directories (e.g.
 Also try out the widget demos from the Tk package.  Everything works? Good,
 now you can start on Sybtcl.
 
-Un-tar the Sybtcl distribution in a sibling directory to tcl8.0, tk8.0,
-and tclX8.0 (or the most current versions of each distribution.)
+Un-tar the Sybtcl distribution in a sibling directory to tcl8.3, tk8.3,
+and (optionally) tclX8.2 (or the most current versions of each distribution).
 
+If you are working in a TEA-compatible environment (Tcl 8.2.x or newer on
+Unix or under cygwin32), you should be able to do ./configure and make in
+the sybtcl top-level directory.  This will build sybtcl as a stub-
+enabled shared library.  See below for details on items that can be 
+changed with './configure'.
 
-Sybtcl uses GNU Autoconf to build a Makefile.  Run "./configure" in the
-'unix' directory.  Configure recognizes the following options:
-
+If you are using an older version of Tcl or desire some variant from the
+above build, you should cd to the 'unix' directory first, then run
+'./configure'.  Configure recognizes the following options:
 
   --prefix=DIR         where to install man, bin, and lib
   --exec-prefix=DIR    where to install bin and lib, if different than --prefix
@@ -97,12 +104,12 @@ Sybtcl uses GNU Autoconf to build a Makefile.  Run "./configure" in the
 
 You should specify the same "--prefix=DIR" and "--exec-prefix=DIR" as when you
 built Tcl, Tk, and TclX.
-
+ 
 The configure script tries to find Tcl, Tk, and TclX installation files in the
-same directory path as specified with --prefix= (default /usr/local).  Configure
-expects to find $prefix/lib/tclConfig.sh, tkConfig.sh, and tclxConfig.sh;
-$prefix/include/ for tcl/tk/tclx include files; $prefix/lib/ for
-tcl/tk/tclx libraries.
+same directory path as specified with --prefix= (default /usr/local).  
+Configure expects to find $prefix/lib/tclConfig.sh, tkConfig.sh, and 
+tclxConfig.sh; $prefix/include/ for tcl/tk/tclx include files; 
+$prefix/lib/ for tcl/tk/tclx libraries.
  
 The environment variable SYBASE is used to find the Sybase libraries, or
 specify the Sybase home using --with-sybase-directory=.
@@ -112,7 +119,9 @@ will halt with a message.
 
 Manual editing of the Makefile may be necessary if configure reports a warning.
 Also check the value of the 'OTHER_LD_SEARCH_FLAGS' if you are building
-the dynamic library version of Sybtcl.
+the dynamic library version of Sybtcl, adding flags specific to your 
+environment to help find the shared libraries at runtime, such as -R on 
+Solaris with SunPro cc.
 
 After configure runs, examine 'Makefile', or just 'make' and see what happens.
 
@@ -138,8 +147,6 @@ Optionally, you can "make install-tools" to copy the wisqlite program to
 a directory, and change the #! interpreter line to reflect the Makefile
 values.  Also installed are sybmon and sp_who.
 
-To install the full-blown UCO Wisql, see the source tree ./samples/uco
-
 "make clean" will delete the .o files, executables, formatted man page,
 and configure cache files.  "make really-clean" cleans up the Makefile,
 libtmp, config.status, and other junk.
@@ -160,6 +167,17 @@ at first, say:
 	tcl> sybnext sybtcl0
 	tcl> sybcols sybtcl0
 	tcl> parray sybmsg
+
+
+ADDITIONAL APPS
+
+De Clark has built some wonder applications using Sybtcl, including the
+feature-rich full version of Wisql.  Visit her site at:
+
+    http://www.ucolick.org/~de/Tcl/
+
+and visit the UCO Lick Tcl/Tk source code link to view and download all
+these applications.
 
 
 TEST SUITE

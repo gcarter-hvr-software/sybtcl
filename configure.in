@@ -302,11 +302,12 @@ fi
 
 case "`uname -s`" in
     *win32* | *WIN32* | *CYGWIN_NT* | *CYGWIN_98* | *CYGWIN_95*)
-      SYB_LIB="$sybase_directory/lib/libsybdb.lib"
+      SYB_LIB='${SYBASE}/lib/libsybdb.lib'
 	AC_MSG_RESULT(SYB_LIB is $SYB_LIB)
     ;;
     *)
-      SYB_LIB='$(SYB_LIB_DIR)/libsybdb.so'
+      SYB_LIB="${SYBASE}/lib/libsybdb${TCL_SHLIB_SUFFIX}"
+	AC_MSG_RESULT(SYB_LIB is $SYB_LIB)
     ;;
 esac
 
@@ -315,9 +316,14 @@ esac
     CTCOMPATSHO=''
     
     SYB_SH_LIB='-lsybdb'
+    SYB_LD_SEARCH_FLAGS=`echo "$TCL_LD_SEARCH_FLAGS" | \
+            sed s,LIB_RUNTIME_DIR,SYB_LIB_DIR,`
+    SYB_LIB_SPEC="${SYB_LD_SEARCH_FLAGS} -L${SYBASE}/lib ${SYB_SH_LIB}"
+    AC_MSG_RESULT(SYB_LIB_SPEC is $SYB_LIB_SPEC)
 
 AC_SUBST(SYBASE)
 AC_SUBST(SYB_LIB)
+AC_SUBST(SYB_LIB_SPEC)
 #--------------------------------------------------------------------
 # Shared libraries and static libraries have different names.
 #--------------------------------------------------------------------
@@ -334,7 +340,7 @@ case "`uname -s`" in
 	;;
     *)
 	if test "${SHARED_BUILD}" = "1" ; then
-            SHLIB_LD_LIBS="${TCL_STUB_LIB_SPEC} ${SYB_LIB}"
+            SHLIB_LD_LIBS="${TCL_STUB_LIB_SPEC} ${SYB_LIB_SPEC}"
 	    eval "${PACKAGE}_LIB_FILE=lib${PACKAGE}${SHARED_LIB_SUFFIX}"
 	    RANLIB=:
 	else
@@ -368,4 +374,5 @@ SC_PROG_TCLSH
 #--------------------------------------------------------------------
 
 AC_OUTPUT([Makefile \
+	pkgIndex.tcl \
 	mkIndex.tcl])

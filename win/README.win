@@ -3,7 +3,7 @@ Sybtcl for Windows
 BEFORE YOU BEGIN
 
 Sybtcl has been ported to Windows NT & 95.
-It has been tested with the latest version of Tcl, 8.0.5.  
+It has been tested with the latest stable version of Tcl, 8.3.2.
 
 You must also have a working Sybase client installation on your machine,
 as Sybtcl uses Sybase DLLs, notably 'libsybdb.dll'.
@@ -22,7 +22,7 @@ PC.  e.g., c:\sybtcl
 To install, copy ALL of the files in the Sybtcl ./win directory to your PC, 
 and simply run the install.tcl file with your tclsh:
  
-	tclsh80 install.tcl
+	tclsh83 install.tcl
         answer 'yes' when prompted.
  
 Manual installation instructions:
@@ -39,7 +39,7 @@ Manual installation instructions:
 
 2.  Copy the sybtcl.dll to your Tcl .\lib directory.  
     
-    copy sybtcl3080.dll  c:\program files\tcl\lib\sybtcl30.dll
+    copy sybtcl3083.dll  c:\program files\tcl\lib\sybtcl30.dll
 
 
 3.  Copy or add pkgIndex.tcl to your Tcl lib directory.  This is so
@@ -91,16 +91,24 @@ You can run the Sybtcl tests manually by:
 
 BUILDING SYBTCL FOR WINDOWS
 
+[Please note that Sybtcl should build as a TEA-compliant extension 
+using the Cygnus cygwin32 utilities in the directory above this one.
+A configure, make, make install sequence in cygwin's bash shell should
+work correctly.  For people with other environments, the instructions
+below should work as well]
+
 My development environment is:
-	Windows 95
-	Microsoft Visual C++ 4.0
-	Tcl 8.0.5 for Windows
-	Sybase Open Client for Windows 11.5 (works with Sybase 10.0.3+ libs)
+	Windows NT 4.0 SP3
+	Microsoft Visual C++ 5.0
+	Tcl 8.3.2 for Windows
+	Sybase Open Client for Windows 11.1 (works with Sybase 10.0.3+ libs)
 
 
-1.  Get and unpack the Tcl 8.0.5 (or higher) distribution.  The 'binary'
-    Tcl distribution contains the include and library files needed by
-    Sybtcl.  Alternatively, you can get the full source Tcl distribution.
+1.  Get and unpack the Tcl 8.3.2 (or higher) distribution (these instructions
+    should work for Tcl 8.0 and newer, but 8.3.2 is recommended for 
+    stability).  The 'binary' Tcl distribution contains the include and 
+    library files needed by Sybtcl.  Alternatively, you can get the full 
+    source Tcl distribution.
 
 2.  Modify the makefile as needed.  You'll probably have to change the
     values for the TCL and SYBASE defines to suit.

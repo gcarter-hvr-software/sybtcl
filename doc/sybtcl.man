@@ -835,11 +835,13 @@ The home directory for Sybase files.
 $SYBASE/interfaces - definitions for Sybase Servers.
 .sp
 .SH AUTHOR
-Tom Poindexter, Denver Colorado.  Version 3.0 released March 1999.
+Tom Poindexter, Denver Colorado <tpoindex@nyx.net>, 
+Currently maintained by D. J. Hagberg <dhagberg@millibits.com>.
+Version 3.0 released December, 2000.
 The ?commands? option to sybnext was borrowed from my work with Oratcl,
 a Tcl interface to the Oracle database product.
 .br
-tpoindex@nyx.net
+http://sybtcl.sourceforge.net/
 .br
 http://www.nyx.net/~tpoindex
 
