@@ -1028,6 +1028,7 @@ syb_tcl_msg_handler (db_proc, msgno, msgstate, severity, msgtext, svrname,
     sprintf(conv_buf, "%d", msgno);
     old_obj = Tcl_ObjGetVar2(sybInterp, SybMsgArray, SM_msgno, TCL_GLOBAL_ONLY);
     tmp_obj = Tcl_NewStringObj("",0);
+    Tcl_IncrRefCount(tmp_obj);
     if (old_obj != NULL) {
 	p = Tcl_GetStringFromObj(old_obj, &strLen);
 	if (strLen > 0) {
@@ -1036,7 +1037,6 @@ syb_tcl_msg_handler (db_proc, msgno, msgstate, severity, msgtext, svrname,
 	} 
     } 
     Tcl_AppendToObj(tmp_obj,conv_buf,-1);
-    Tcl_IncrRefCount(tmp_obj);
     Tcl_ObjSetVar2(sybInterp, SybMsgArray, SM_msgno, tmp_obj,TCL_GLOBAL_ONLY);
     Tcl_DecrRefCount(tmp_obj);
 
@@ -1045,6 +1045,7 @@ syb_tcl_msg_handler (db_proc, msgno, msgstate, severity, msgtext, svrname,
     Tcl_IncrRefCount(msgtext_obj);
     old_obj = Tcl_ObjGetVar2(sybInterp, SybMsgArray,SM_msgtext,TCL_GLOBAL_ONLY);
     tmp_obj = Tcl_NewStringObj("",0);
+    Tcl_IncrRefCount(tmp_obj);
     if (old_obj != NULL) {
 	p = Tcl_GetStringFromObj(old_obj, &strLen);
 	if (strLen > 0) {
@@ -1053,7 +1054,6 @@ syb_tcl_msg_handler (db_proc, msgno, msgstate, severity, msgtext, svrname,
 	} 
     } 
     Tcl_AppendToObj(tmp_obj,msgtext,-1);
-    Tcl_IncrRefCount(tmp_obj);
     Tcl_ObjSetVar2(sybInterp, SybMsgArray, SM_msgtext, tmp_obj,TCL_GLOBAL_ONLY);
     Tcl_DecrRefCount(tmp_obj);
 
@@ -1420,8 +1420,8 @@ parse_column (interp, hand, col_type, col_len, col_len2, col_ptr, iptr_idx,
 		    return (0);
 		}
 		if (col_type == SYBDATETIME4 || col_type == SYBDATETIMN) {
-		    dbconvert(SybProcs[hand].dbproc,col_type, col_ptr, col_len, 
-			     SYBDATETIME, (BYTE *) &convert_date, 
+		    dbconvert(SybProcs[hand].dbproc,col_type, col_ptr, 
+			     col_len, SYBDATETIME, (BYTE *) &convert_date, 
 			     sizeof(convert_date));
 		    col_ptr = (BYTE *) &convert_date;
 		}
@@ -1494,7 +1494,7 @@ parse_column (interp, hand, col_type, col_len, col_len2, col_ptr, iptr_idx,
 	    /* large money values may loose precsion, so convert to char */
 	    /* smallmoney is handled as float */
 	    dbconvert(SybProcs[hand].dbproc,col_type, col_ptr, col_len,
-			  SYBCHAR, buf2, -1);
+			  SYBCHAR, (BYTE *)buf2, -1);
 
 	    /* make sure it looks like a float */
 	    decimal = 0;
@@ -1534,7 +1534,7 @@ parse_column (interp, hand, col_type, col_len, col_len2, col_ptr, iptr_idx,
 	    } else {
 		/* lost precision, convert to char */
 		dbconvert(SybProcs[hand].dbproc,col_type, col_ptr, col_len,
-			  SYBCHAR, buf2, -1);
+			  SYBCHAR, (BYTE *)buf2, -1);
 
 		/* make sure it looks like a float */
 		decimal = 0;
@@ -1600,7 +1600,7 @@ parse_column (interp, hand, col_type, col_len, col_len2, col_ptr, iptr_idx,
 		}
 	        memset(buf,'\0',text_buf_size+2); 
 		dbconvert(SybProcs[hand].dbproc,col_type, col_ptr, col_len,
-			SYBCHAR, buf, -1);
+			SYBCHAR, (BYTE *)buf, -1);
 		text_buf_size = -1;
 	    } else {
 		/* just grab the raw buffer */
@@ -2237,9 +2237,11 @@ Sybtcl_Init (interp)
     /*                            "ctcompat" if compiled with ctcompat lib    */
 #ifdef DBVERSION_100
     tmp_obj = Tcl_NewStringObj("system10", -1);
+    Tcl_IncrRefCount(tmp_obj);
     elements = 1;
 #else
     tmp_obj = Tcl_NewStringObj("", 0);
+    Tcl_IncrRefCount(tmp_obj);
     elements = 0;
 #endif
 #ifdef CTCOMPATLIB
@@ -2248,7 +2250,6 @@ Sybtcl_Init (interp)
     }
     Tcl_AppendToObj(tmp_obj, "ctcompat", -1);
 #endif
-    Tcl_IncrRefCount(tmp_obj);
     Tcl_ObjSetVar2(interp, SybMsgArray, SM_dblibinfo, tmp_obj, TCL_GLOBAL_ONLY);
     Tcl_DecrRefCount(tmp_obj);
 
@@ -2736,7 +2737,9 @@ Sybtcl_Money (clientData, interp, objc, objv)
 	return TCL_ERROR;
     }
     
+    Tcl_IncrRefCount(tmp_obj);
     Tcl_SetObjResult(interp, tmp_obj);
+    Tcl_DecrRefCount(tmp_obj);
 
     return TCL_OK;
 }
@@ -2939,15 +2942,17 @@ Sybtcl_Sql (clientData, interp, objc, objv)
     /* save dbresults return code */
     SybProcs[hand].last_results = dbret;
 
-    if (dbhasretstat(SybProcs[hand].dbproc) == TRUE) {
-	tmp_obj = Tcl_NewIntObj(dbretstatus(SybProcs[hand].dbproc));
-	Tcl_IncrRefCount(tmp_obj);
-        Tcl_ObjSetVar2(interp, SybMsgArray, SM_retstatus, 
-		tmp_obj, TCL_GLOBAL_ONLY);
-	Tcl_DecrRefCount(tmp_obj);
-    }
-
     if (dbret == NO_MORE_RESULTS) {
+        /* If there were no result sets, there may be a SP return code */
+        /* NOTE: sybase docs say that dbhasretstat/dbretstatus should only */
+	/* be called after all results have been processed... */
+        if (dbhasretstat(SybProcs[hand].dbproc) == TRUE) {
+            tmp_obj = Tcl_NewIntObj(dbretstatus(SybProcs[hand].dbproc));
+            Tcl_IncrRefCount(tmp_obj);
+            Tcl_ObjSetVar2(interp, SybMsgArray, SM_retstatus, 
+                    tmp_obj, TCL_GLOBAL_ONLY);
+            Tcl_DecrRefCount(tmp_obj);
+        }
 	strcpy(buf,"NO_MORE_ROWS"); /* yes, return this,not NO_MORE_RESULTS */
 	SybProcs[hand].last_next    = NO_MORE_ROWS;
 
@@ -3184,6 +3189,7 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 
         s2 = s;
 	cmd_obj = Tcl_NewListObj(0, NULL);
+	Tcl_IncrRefCount(cmd_obj);
 
 	while ( (p = strchr(s2,subchar)) != NULL) {
 	    if (num_str >= NUMSTRS || colnum >= NUMSTRS) {
@@ -3196,7 +3202,9 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 
 	    if (isdigit(*(p+1))) {	/* it's a substitution value ! */
 		tmp_obj = Tcl_NewStringObj(s2, (p - s2));
+		Tcl_IncrRefCount(tmp_obj);
 		Tcl_ListObjAppendElement(NULL, cmd_obj, tmp_obj);
+		Tcl_DecrRefCount(tmp_obj);
 
 		i = strtoul(p + 1, &s2, 10);	/* the column number */
 
@@ -3207,7 +3215,9 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 
 	    } else {			/* it's a subchar without number */
 		tmp_obj = Tcl_NewStringObj(s2, (p - s2 + 1));
+		Tcl_IncrRefCount(tmp_obj);
 		Tcl_ListObjAppendElement(NULL, cmd_obj, tmp_obj);
+		Tcl_DecrRefCount(tmp_obj);
 		colidx[num_str] = -1; /* no column to sub */
 		num_str++;
 		s2 = p + 1;		
@@ -3220,7 +3230,9 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 	if (num_str > 0) {
 	    /* add last piece of cmd string */
 	    tmp_obj = Tcl_NewStringObj(s2, -1);
+	    Tcl_IncrRefCount(tmp_obj);
 	    Tcl_ListObjAppendElement(NULL, cmd_obj, tmp_obj);
+	    Tcl_DecrRefCount(tmp_obj);
 	} else {
 	    /* no substitutions made, buid tcl obj from argument */
 	    Tcl_DecrRefCount(cmd_obj);
@@ -3291,8 +3303,12 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 
     /* loop until fetch exhausted */
 
-    /* process any pengin Tcl events while waiting for data to arrive */
-    events_waiting(hand,1);
+    /* Version 3.0b<4 tried to process pending Tcl events here while */
+    /* waiting for data to arrive, but Sybase's DB-Lib documentation */
+    /* (v. 11.1.x) EXPLICITLY says that it's a bad idea to call dbpoll */
+    /* after dbsqlok while processing results with dbnextrow, so */
+    /* unfortunately we cannot check for events here.  We need CT-Lib */
+    /* to get read asynch row processing... */
 
     if (Sybtcl_Next(clientData, interp, 2, objv) == TCL_ERROR) {
 	Sybtcl_AppendObjResult (interp, ": ", CMD_STR,
@@ -3364,6 +3380,7 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 			    Tcl_NewStringObj("",-1), TCL_GLOBAL_ONLY);
 	    } else {
 		SybProcs[hand].bufferedIsnull = Tcl_NewStringObj("",-1);
+		Tcl_IncrRefCount(SybProcs[hand].bufferedIsnull);
 	    }
 	    Tcl_ResetResult(interp);
 	    goto okExit;
@@ -3398,6 +3415,7 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 	    p = Tcl_GetStringFromObj(tmp_obj, &i);
 	    Tcl_DStringAppend(&evalStr, p, i);
 	    eval_obj = Tcl_NewStringObj(Tcl_DStringValue(&evalStr),-1);
+	    Tcl_IncrRefCount(eval_obj);
 	    Tcl_DStringFree(&evalStr);
 	} 
 
@@ -3455,8 +3473,9 @@ Sybtcl_NextAll (clientData, interp, objc, objv)
 
         /* next fetch */
 
-        /* process any Tcl events while waiting for data to arrive */
-        events_waiting(hand,1);
+        /* Versions 3.0b<4 tried to process Tcl events here but that */
+        /* turns out the be a bad idea with DB-Lib 11.1.x per the */
+        /* comment above. */
 
         if (Sybtcl_Next(clientData, interp, 2, objv) == TCL_ERROR) {
 	    Sybtcl_AppendObjResult (interp, ": ", CMD_STR,
@@ -3684,14 +3703,14 @@ Sybtcl_Next (clientData, interp, objc, objv)
     if ((dbret == REG_ROW) || (dbret > 0)) {
 	/* set the "nextrow" message, and get the number of columns */
 	if (dbret == REG_ROW) {
-	    strcpy(buf,"REG_ROW");
+	    tmp_obj = Tcl_NewStringObj("REG_ROW",-1);
+	    Tcl_IncrRefCount(tmp_obj);
 	    num_cols = dbnumcols(SybProcs[hand].dbproc);
 	} else {
-	    sprintf(buf,"%d",dbret);	/* the compute id as integer */
+	    tmp_obj = Tcl_NewIntObj(dbret); /* the compute id as integer */
+	    Tcl_IncrRefCount(tmp_obj);
 	    num_cols = dbnumalts(SybProcs[hand].dbproc,dbret);
 	}
-	tmp_obj = Tcl_NewStringObj(buf,-1);
-	Tcl_IncrRefCount(tmp_obj);
 	Tcl_ObjSetVar2(interp, SybMsgArray, SM_nextrow, 
 		tmp_obj, TCL_GLOBAL_ONLY);
         Tcl_DecrRefCount(tmp_obj);
@@ -3822,7 +3841,9 @@ Sybtcl_Cols (clientData, interp, objc, objv)
 		} else {
 		    tmp_obj = Tcl_NewStringObj("",0);
 		}
+		Tcl_IncrRefCount(tmp_obj);
 		Tcl_ListObjAppendElement(NULL, col_obj, tmp_obj);
+		Tcl_DecrRefCount(tmp_obj);
 
 		Tcl_ListObjAppendElement(NULL, len_obj, 
 			Tcl_NewIntObj(dbretlen(SybProcs[hand].dbproc,i)));
@@ -3850,7 +3871,9 @@ Sybtcl_Cols (clientData, interp, objc, objv)
 		    } else {
 			tmp_obj = Tcl_NewStringObj("",0);
 		    }
+		    Tcl_IncrRefCount(tmp_obj);
 		    Tcl_ListObjAppendElement(NULL, col_obj, tmp_obj);
+		    Tcl_DecrRefCount(tmp_obj);
 
 		    Tcl_ListObjAppendElement(NULL, len_obj,
 			 Tcl_NewIntObj(dbcollen(SybProcs[hand].dbproc,i)));
@@ -4479,6 +4502,7 @@ Sybtcl_Rdtext (clientData, interp, objc, objv)
 
     if (isvar) {
         tmp_obj = Tcl_NewStringObj("",0);
+        Tcl_IncrRefCount(tmp_obj);
     } else {
 	if (Tcl_IsSafe(interp)) {
 	    Sybtcl_AppendObjResult (interp, CMD_STR,
@@ -4523,7 +4547,6 @@ Sybtcl_Rdtext (clientData, interp, objc, objv)
     }
 
     if (isvar) {
-	Tcl_IncrRefCount(tmp_obj);
 	Tcl_ObjSetVar2(interp, objv[obj_parm], NULL, tmp_obj, TCL_PARSE_PART1);
 	Tcl_DecrRefCount(tmp_obj);
     } else {
