@@ -164,11 +164,18 @@
  * -make dbclose() perform one last sql if mactinosh (see ./mac/README.mac)
  * -make macintosh do less events_waiting
  *
+ * -added Stub enabling code. Reversed includes of tcl,h and windows.h
+ *  because of compilation issues.
+ *
+ * RCS: @(#) $Id: sybtcl.c,v 1.4 2000/08/17 20:24:00 mtariq Exp $
  */
 
 
 #define SYBTCL_VERSION "3.0"
 
+#if defined(_WIN32) || defined(__WIN32__)
+#include <windows.h>
+#endif
 
 #include "tcl.h"
 
@@ -2009,6 +2016,13 @@ Sybtcl_Init (interp)
     int elements;
     static int SybtclInitFlag = 0;   /* set when initialized via Sybtcl_Init */
     Tcl_Obj *tmp_obj;
+
+#ifdef USE_TCL_STUBS
+    if (Tcl_InitStubs(interp, "8.0", 0) == NULL) {
+        return TCL_ERROR;
+    }
+#endif
+
 
     /* save the interp structure for the error & msg handlers */
     SybInterp = interp;
