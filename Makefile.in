@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.5 2000/08/18 03:33:28 mtariq Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.6 2000/08/18 19:14:42 mtariq Exp $
 
 #========================================================================
 # Edit the following few lines when writing a new extension
@@ -217,11 +217,6 @@ binaries: $(BINARIES)
 libraries:
 
 doc:
-	@echo "If you have documentation to create, place the commands to"
-	@echo "build the docs in the 'doc:' target.  For example:"
-	@echo ""
-	@echo "xml2nroff sybtcl.xml > sybtcl.n"
-	@echo "xml2html sybtcl.xml > sybtcl.html"
 
 install: all install-binaries install-libraries install-doc
 
@@ -249,11 +244,9 @@ install-libraries: libraries
 #========================================================================
 
 install-doc: doc
-	$(mkinstalldirs) $(mandir)/man1
-	$(mkinstalldirs) $(mandir)/man3
 	$(mkinstalldirs) $(mandir)/mann
 	@echo "Installing documentation in $(mandir)"
-	@for i in $(srcdir)/*.n; \
+	@for i in $(srcdir)/doc/*.man; \
 	    do \
 	    echo "Installing $$i"; \
 	    rm -f $(mandir)/mann/$$i; \
