@@ -27,13 +27,13 @@ PROJECT = sybtcl$(DLL_VERSION)
 
 
 ROOT    = .
-TMPDIR  = .
+TMPDIR  = ..\generic
 TOOLS32 = c:\msdev
 
 # point TCL and TCLLIB to your tcl distribution
 
-TCL     = c:\progra~1\tcl
-TCLLIB  = $(TCL)\lib\tcl80.lib
+TCL     = c:\progra~1\tcl83
+TCLLIB  = $(TCL)\lib\tclstub83.lib
 
 SYBASE  = c:\sybase115
 SYBASE_LIB = $(SYBASE)\lib\libsybdb.lib
@@ -52,7 +52,7 @@ CP      = copy
 RM      = del
 
 INCLUDES = -I$(TOOLS32)\include -I$(TCL)\include -I$(SYBASE)\include
-DEFINES = -nologo $(DEBUGDEFINES) -DNO_BCOPY
+DEFINES = -nologo $(DEBUGDEFINES) -DNO_BCOPY -DUSE_TCL_STUBS
 
 !include <ntwin32.mak>
 
