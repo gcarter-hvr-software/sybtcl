@@ -306,7 +306,7 @@ case "`uname -s`" in
 	AC_MSG_RESULT(SYB_LIB is $SYB_LIB)
     ;;
     *)
-      SYB_LIB='$(SYB_LIB_DIR)/libsybdb.a'
+      SYB_LIB='$(SYB_LIB_DIR)/libsybdb.so'
     ;;
 esac
 
