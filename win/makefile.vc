@@ -28,14 +28,17 @@ PROJECT = sybtcl$(DLL_VERSION)
 
 ROOT    = .
 TMPDIR  = ..\generic
-TOOLS32 = c:\msdev
+
+# point TOOLS32 to your C compiler
+
+TOOLS32 = d:\progra~1\micros~2\VC98
 
 # point TCL and TCLLIB to your tcl distribution
 
-TCL     = c:\progra~1\tcl83
+TCL     = d:\progra~1\tcl83
 TCLLIB  = $(TCL)\lib\tclstub83.lib
 
-SYBASE  = c:\sybase115
+SYBASE  = d:\sybase
 SYBASE_LIB = $(SYBASE)\lib\libsybdb.lib
 
 # comment the following line to compile with symbols
