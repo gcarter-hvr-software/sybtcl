@@ -266,7 +266,7 @@ case "`uname -s`" in
     *win32* | *WIN32* | *CYGWIN_NT* | *CYGWIN_98* | *CYGWIN_95*)
 	AC_MSG_RESULT(looking for include/sybdb.h and include/ctpublic.h in $sybase_directory)
         if test -r "$sybase_directory/include/sybdb.h" -o -r "$sybase_directory/include/ctpublic.h" ; then
-	    SYBASE="$sybase_directory"
+	    SYBASE="\"`cygpath -w $sybase_directory`\""
 	    AC_MSG_RESULT(setting SYBASE to $SYBASE) 
 	    break
 	fi
