@@ -167,7 +167,7 @@
  * -added Stub enabling code. Reversed includes of tcl,h and windows.h
  *  because of compilation issues.
  *
- * RCS: @(#) $Id: sybtcl.c,v 1.4 2000/08/17 20:24:00 mtariq Exp $
+ * RCS: @(#) $Id: sybtcl.c,v 1.5 2000/08/31 00:24:18 mtariq Exp $
  */
 
 
@@ -459,6 +459,19 @@ static int   dbGetHandleProc _ANSI_ARGS_((ClientData instanceData,
 			int direction, ClientData *handlePtr));
 static int   dbCloseProc _ANSI_ARGS_((ClientData instanceData, 
 			Tcl_Interp *interp));
+
+static int dbEventProc _ANSI_ARGS_((Tcl_Event *evPtr, int flags));
+static void dbSetupProc _ANSI_ARGS_((ClientData cd_hand, int flags));
+static void dbCheckProc _ANSI_ARGS_((ClientData cd_hand, int flags));
+void Sybtcl_Kill _ANSI_ARGS_((ClientData clientData));
+static int CS_INTERNAL syb_tcl_err_handler _ANSI_ARGS_((
+	DBPROCESS *db_proc,
+    int      severity,
+    int       dberr,
+    int       oserr,
+    char      *dberrstr,
+    char      *oserrstr
+    ));
 
 static Tcl_ChannelType dbChannelType = {
     "sybtcl",
@@ -2043,7 +2056,7 @@ Sybtcl_Init (interp)
 	dbsetmaxprocs(SYBTCLPROCS);  /*make sure db-lib match our table size*/
 
 #ifdef __WIN32__
-	dberrhandle((MHANDLEFUNC) syb_tcl_err_handler);
+	dberrhandle(syb_tcl_err_handler);
 	dbmsghandle((MHANDLEFUNC) syb_tcl_msg_handler);
 #else
 	dberrhandle(syb_tcl_err_handler);
