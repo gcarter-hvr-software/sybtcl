@@ -212,6 +212,7 @@ LDFLAGS_OPTIMIZE=${TCL_LDFLAGS_OPTIMIZE}
 SHLIB_LD=${TCL_SHLIB_LD}
 STLIB_LD=${TCL_STLIB_LD}
 SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
+SHLIB_SUFFIX=${TCL_SHLIB_SUFFIX}
 
 AC_SUBST(CFLAGS_DEBUG)
 AC_SUBST(CFLAGS_OPTIMIZE)
@@ -219,7 +220,7 @@ AC_SUBST(STLIB_LD)
 AC_SUBST(SHLIB_LD)
 AC_SUBST(SHLIB_CFLAGS)
 AC_SUBST(SHLIB_LDFLAGS)
-
+AC_SUBST(SHLIB_SUFFIX)
 #--------------------------------------------------------------------
 # Set the default compiler switches based on the --enable-symbols 
 # option.
@@ -306,7 +307,7 @@ case "`uname -s`" in
 	AC_MSG_RESULT(SYB_LIB is $SYB_LIB)
     ;;
     *)
-      SYB_LIB='$(SYB_LIB_DIR)/libsybdb.so'
+      SYB_LIB='$(SYB_LIB_DIR)/libsybdb${SHLIB_SUFFIX}'
     ;;
 esac
 
