@@ -1,1 +1,1 @@
-package ifneeded Sybtcl @SYBTCL_VERSION@ "load [file join $dir .. libSybtcl@SYBTCL_LIBVER@[info sharedlibextension]]"
+package ifneeded Sybtcl @SYBTCL_VERSION@ [list load [file join [file dirname $dir] libSybtcl@SYBTCL_LIBVER@[info sharedlibextension]]]

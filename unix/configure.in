@@ -352,35 +352,45 @@ fi
 #       ld.  try to coerce '-Wl,<flag>,<parm>' into just '<flag> <parm>'
 #       other flags are left as is.
 #--------------------------------------------------------------------
+#	double-sigh.  The latest rev's of configure use gcc or cc
+#	as the linker rather than ld directly, so the above no longer
+#	applies.  We hack around this by checking for "cc" on the 
+#	end of the linker command. (dhagberg 2000-07-10)
+#--------------------------------------------------------------------
 
-OTHER_LD_SEARCH_FLAGS=''
-SPACE=''
-for arg in $TCL_LD_SEARCH_FLAGS
-do
-  newarg=''
-  case $arg in
-    -Wl*)
-      IFS_SAVE=$IFS
-      IFS=,
-      for p in $arg
-      do
-        case $p in
-          -Wl)
-            ;;
-          *)
-            newarg="$newarg $p"
-            ;;
-        esac
-      done
-      IFS=$IFS_SAVE
-      ;;
-    *)
-      newarg=$arg
-      ;;
-  esac
-  OTHER_LD_SEARCH_FLAGS="${OTHER_LD_SEARCH_FLAGS}${SPACE}${newarg}"
-  SPACE=' '
-done
+if echo "$TCL_SHLIB_LD" | egrep 'cc$|CC$|cc |CC '
+then
+  OTHER_LD_SEARCH_FLAGS="$TCL_LD_SEARCH_FLAGS"
+else
+  OTHER_LD_SEARCH_FLAGS=''
+  SPACE=''
+  for arg in $TCL_LD_SEARCH_FLAGS
+  do
+    newarg=''
+    case $arg in
+      -Wl*)
+        IFS_SAVE=$IFS
+        IFS=,
+        for p in $arg
+        do
+          case $p in
+            -Wl)
+              ;;
+            *)
+              newarg="$newarg $p"
+              ;;
+          esac
+        done
+        IFS=$IFS_SAVE
+        ;;
+      *)
+        newarg=$arg
+        ;;
+    esac
+    OTHER_LD_SEARCH_FLAGS="${OTHER_LD_SEARCH_FLAGS}${SPACE}${newarg}"
+    SPACE=' '
+  done
+fi
 
 
 #--------------------------------------------------------------------
