@@ -346,3 +346,7 @@ Version 3.0, April, 1999
 	Added a few #ifdefs for macintosh, to be more mac friendly.
 
 
+--- October 2000
+
+    Moved to SourceForge.  Added config/* to cvs tree (used to be included
+    as a cvs link).  -- hobbs
