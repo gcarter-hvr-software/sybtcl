@@ -65,8 +65,8 @@ set tclver [info tclversion]
 regsub -all {\.} $tclver "" tclver
 
 # just works for Tcl 8.0 currently, change this when 8.1+ is supported
-if {"$tclver" > "80"} {
-  set tclver 80
+if {"$tclver" > "83"} {
+  set tclver 83
 }
 
 # set directory for pkgIndex.tcl, set required dll, and install dll name
