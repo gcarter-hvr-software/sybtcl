@@ -2359,7 +2359,7 @@ Sybtcl_Init (interp)
     clear_msg(interp);
 
 
-    /* callback to clean up any dbprocs left open on interpreter deletetion */
+    /* callback to clean up any dbprocs left open on interpreter deletion */
     Tcl_CallWhenDeleted(interp, (Tcl_InterpDeleteProc *) Sybtcl_DeleteInterp,
 			(ClientData) NULL);
 
@@ -4645,25 +4645,35 @@ callback_handler (cd_hand, mask)
 		flags = 0;
 	}
 
-	/* repeatedly eval callback script while dbproc ready and data exists */
+	/* repeatedly eval callback script while dbproc ready and data exists*/
+        /* also eval callback once if dbpoll() says the connection is dead */
 
-        dbret = dbpoll(SybProcs[hand].dbproc, 0L, &readyproc, &reason);
-
-        while (dbret == SUCCEED && readyproc == SybProcs[hand].dbproc && 
-	       SybProcs[hand].last_results != NO_MORE_RESULTS && ! bgerror) {
-
-            bgerror = invoke_handler(hand, interp);
+        while (1) {
+            dbret = dbpoll(SybProcs[hand].dbproc, 0L, &readyproc, &reason);
+            if ( (dbret == FAIL) ||
+                    ((readyproc == SybProcs [hand].dbproc) && 
+                     (SybProcs[hand].last_results != NO_MORE_RESULTS) &&
+                     (bgerror == 0)) ) {
+                bgerror = invoke_handler(hand, interp);
+            } else {
+                break;
+            }
 
             /* let Tcl fire other events as needed */
             if (flags) {
                 Tcl_DoOneEvent(flags);
             }
 
-	    if (SybProcs[hand].last_results == NO_MORE_RESULTS) {
-		dbret = FAIL;
-	    } else {
-	        dbret = dbpoll(SybProcs[hand].dbproc, 0L, &readyproc, &reason);
+            if (dbret == FAIL) {
+                break;
 	    }
+	}
+
+        /* user called sybclose; can not use dbproc */
+
+	if (SybProcs [hand].dbproc == NULL) {
+            SybProcs[hand].in_event = 0;
+            return;
 	}
 
         /* no more bytes waiting in socket, check other conditions */
@@ -4691,7 +4701,7 @@ callback_handler (cd_hand, mask)
 
     } else {
 
-	/* if we were called and don't have a callback script, remove handler */
+	/* if we were called and don't have a callback script, remove handler*/
 	remove_handler(hand);
     }
 
