@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.1 2000/08/17 18:38:52 mtariq Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.2 2000/08/17 23:35:13 mtariq Exp $
 
 #========================================================================
 # Edit the following few lines when writing a new extension
@@ -158,6 +158,7 @@ TCL_PLATFORM_DIR_NATIVE = @TCL_PLATFORM_DIR_NATIVE@
 TCL_GENERIC_DIR_NATIVE = @TCL_GENERIC_DIR_NATIVE@
 TCLSH_PROG = @TCLSH_PROG@
 SHARED_BUILD = @SHARED_BUILD@
+SYBASE = @SYBASE@
 
 AUTOCONF = autoconf
 
